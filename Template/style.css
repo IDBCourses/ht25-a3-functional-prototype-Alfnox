@@ -1,9 +1,11 @@
-.thing {
+.thing{
     width: 100px;
     height: 100px;
     background-color: deeppink;
     position: absolute;
     border-radius: 50%;
+    /* move the element's center to (from left, top) */
+   transform: translate(-50%, -50%);
 }
 
 /* Prevent padding and border from affecting element width. */
