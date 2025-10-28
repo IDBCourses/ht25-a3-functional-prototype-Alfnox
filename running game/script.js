@@ -6,8 +6,8 @@
 import * as Util from "./util.js";
 
 
-let speed = 0.005
-// let lastKeyPressed = 
+let speed = 0.005;
+let lastKeyPressed = ' ';
 
 
 
@@ -48,12 +48,22 @@ function loop() {
 
 function setup() {
   Util.createThing("thingOne","thing");
+
   document.addEventListener("keydown", (event) => {
-    event.key === 'r'||event.key === 'f';
-    if (!event.repeat){
+    if(lastKeyPressed === 'r' && event.key === 'f'){
+      thingOneObj.x=thingOneObj.x+speed;
+      lastKeyPressed = 'f';
+    }
+    if(lastKeyPressed === 'f' && event.key === 'r'){
+      thingOneObj.x=thingOneObj.x+speed;
+      lastKeyPressed = 'r';
+    }
+/*     if (!event.repeat &&!(lastKeyPressed === event.key)&&(event.key === 'r'||event.key === 'f')){
     thingOneObj.x=thingOneObj.x+speed;  
-  }
+  } */
+  lastKeyPressed = event.key
   console.log('lastkey '+event.key)
+  console.log('lastkey string '+lastKeyPressed)
 });
   
   window.requestAnimationFrame(loop);
