@@ -4,16 +4,12 @@
  */
 
 import * as Util from "./util.js";
-let hue = 40;
-let sat = 25;
 
-//hue: 40->360
-// 100 1 -> 9
-// 75  q -> o
-// 50  a -> l
-// 25  z -> .
-//  ^
-// Sat:
+
+let speed = 0.005
+// let lastKeyPressed = 
+
+
 
 const thingOneObj = {
   x: 0.5,
@@ -38,6 +34,8 @@ function setAppearanceProperties (obj,name) {
   Util.setRoundedness(r,name)
   Util.setColour(h,s,l,a,name)
 }
+
+
 // Code that runs over and over again
 function loop() {
   setAppearanceProperties(thingOneObj,thingOne);
@@ -46,27 +44,17 @@ function loop() {
   window.requestAnimationFrame(loop);
 }
 
+// Setup
+
 function setup() {
   Util.createThing("thingOne","thing");
   document.addEventListener("keydown", (event) => {
-    if (event.key === 'w' || event.key === 'W') {
-      thingOneObj.y=thingOneObj.y-0.01;
-      console.log("keydown:"+event.key)
-    }
-    if (event.key === 's' || event.key === 'S') {
-      thingOneObj.y=thingOneObj.y+0.01;
-      console.log("keydown:"+event.key)
-    }
-    if (event.key === 'a' || event.key === 'A') {
-      thingOneObj.x=thingOneObj.x-0.01;
-      console.log("keydown:"+event.key)
-    }
-    if (event.key === 'd' || event.key === 'D') {
-      thingOneObj.x=thingOneObj.x+0.01;
-      console.log("keydown:"+event.key)
-    }
-  })
-  
+    event.key === 'r'||event.key === 'f';
+    if (!event.repeat){
+    thingOneObj.x=thingOneObj.x+speed;  
+  }
+  console.log('lastkey '+event.key)
+});
   
   window.requestAnimationFrame(loop);
 }
