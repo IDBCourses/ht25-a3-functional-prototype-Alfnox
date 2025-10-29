@@ -30,6 +30,32 @@
     /* move the element's center to (from left, top) */
     transform: translate(-50%, -50%);
 }
+.thingFour{
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    border-radius: 50%;
+    /*makes a trapezoid*/
+    border-bottom: 100px solid #ffffff;
+    /*cuts off the top corners*/
+	border-left: 0px solid transparent;
+	border-right: 25px solid transparent;
+    /* move the element's center to (from left, top) */
+    transform: translate(-50%, -50%);
+}
+.thingFive{
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    border-radius: 50%;
+    /*makes a trapezoid*/
+    border-bottom: 100px solid #ffffff;
+    /*cuts off the top corners*/
+	border-left: 25px solid transparent;
+	border-right: 0px solid transparent;
+    /* move the element's center to (from left, top) */
+    transform: translate(-50%, -50%);
+}
 /* Prevent padding and border from affecting element width. */
 *,
 ::before,
