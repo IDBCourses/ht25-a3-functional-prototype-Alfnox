@@ -10,9 +10,9 @@ let speed = 0.007;
 let jump = 0.005
 let lastKeyPressed = ' ';
 
+//Objects
 
-
-const thingOneObj = {
+const manOneObj = {
   x: 0.4,
   y: 0.65,
   width: 70,
@@ -34,7 +34,7 @@ const thingTwoObj = {
   l: 50,
   a: 0,
 }
-const thingThreeObj = {
+const manOneShadowObj = {
   x: 0.4,
   y: 0.717,
   width: 70,
@@ -45,7 +45,7 @@ const thingThreeObj = {
   l: 60,
   a: 0.61,
 }
-const thingFourObj = {
+const barOneObj = {
   x: 0.5,
   y: 0.754,
   width: 460,
@@ -56,10 +56,10 @@ const thingFourObj = {
   l: 0,
   a: 1,
 }
-const thingFiveObj = {
+const BarTwoObj = {
   x: 0.5,
   y: 0.646,
-  width: 400,
+  width: 415,
   height: 5,
   r: 0,
   h: 100,
@@ -67,7 +67,7 @@ const thingFiveObj = {
   l: 0,
   a: 1,
 }
-const thingSixObj = {
+const gameOverObj = {
   x: 0.6,
   y: 0.717,
   width: 70,
@@ -94,12 +94,12 @@ function setAppearanceProperties (obj,name) {
 
 // Code that runs over and over again
 function loop() {
-  setAppearanceProperties(thingThreeObj,thingThree);
-  setAppearanceProperties(thingOneObj,thingOne);
+  setAppearanceProperties(manOneShadowObj,thingThree);
+  setAppearanceProperties(manOneObj,thingOne);
   setAppearanceProperties(thingTwoObj,thingTwo);
-  setAppearanceProperties(thingFourObj,thingFour);
-  setAppearanceProperties(thingFiveObj,thingFive);
-  setAppearanceProperties(thingSixObj,thingSix);
+  setAppearanceProperties(barOneObj,thingFour);
+  setAppearanceProperties(BarTwoObj,thingFive);
+  setAppearanceProperties(gameOverObj,thingSix);
  
   
   
@@ -117,35 +117,32 @@ function setup() {
   Util.createThing("thingSix","thingOne")
 
   document.addEventListener("keydown", (event) => {
-    if(lastKeyPressed === 'y' && event.key === 'h'){
+    if(lastKeyPressed === 'KeyY' && event.code === 'KeyH'){
       thingTwoObj.x=thingTwoObj.x-speed; // moves obsticles to the left
-      thingSixObj.x=thingTwoObj.x
-      lastKeyPressed = 'h';
+      gameOverObj.x=thingTwoObj.x
+      lastKeyPressed = 'KeyH';
     }
-    if(lastKeyPressed === 'h' && event.key === 'y'){
+    if(lastKeyPressed === 'KeyH' && event.code === 'KeyY'){
       thingTwoObj.x=thingTwoObj.x-speed;
-      thingSixObj.x=thingTwoObj.x
-      lastKeyPressed = 'y';
+      gameOverObj.x=thingTwoObj.x
+      lastKeyPressed = 'KeyY';
     }
 
-  document.addEventListener("keydown", (event)=> {
-    console.log(event.key)
-   if (event.key === ' ' && !event.repeat){
-      thingOneObj.y=0.50
+  document.addEventListener("keydown", (event)=> {    
+   if (event.code === 'Space' && !event.repeat){
+      manOneObj.y=0.50
      }
   })
-  document.addEventListener("keyup", (event)=> {
-    console.log(event.key)
-   if (event.key === ' '){
-      thingOneObj.y=0.65
-      
+  document.addEventListener("keyup", (event)=> {    
+   if (event.code === 'Space'){
+      manOneObj.y=0.65      
     }
   })
 /*     if (!event.repeat &&!(lastKeyPressed === event.key)&&(event.key === 'r'||event.key === 'f')){
     thingOneObj.x=thingOneObj.x+speed;  
   } */
-  lastKeyPressed = event.key
-  console.log('lastkey '+event.key)
+  lastKeyPressed = event.code
+  console.log('lastkey '+event.code)
   console.log('lastkey string '+lastKeyPressed)
 });
   
