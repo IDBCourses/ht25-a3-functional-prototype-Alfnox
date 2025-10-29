@@ -1,4 +1,4 @@
-.thing{
+.thingOne{
     width: 100px;
     height: 100px;
     background-color: deeppink;
@@ -8,6 +8,28 @@
     transform: translate(-50%, -50%);
 }
 
+.thingTwo{
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    border-radius: 50%;
+    /*makes a trapezoid*/
+    border-bottom: 80px solid #000000;
+    /*cuts off the top corners*/
+	border-left: 25px solid transparent;
+	border-right: 25px solid transparent;
+    /* move the element's center to (from left, top) */
+    transform: translate(-50%, -50%);
+}
+.thingThree{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(244, 68, 33);
+    position: absolute;
+    border-radius: 50%;
+    /* move the element's center to (from left, top) */
+    transform: translate(-50%, -50%);
+}
 /* Prevent padding and border from affecting element width. */
 *,
 ::before,
