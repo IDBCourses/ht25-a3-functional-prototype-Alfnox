@@ -8,12 +8,15 @@
 import * as Util from "./util.js";
 
 
+
 let speed = 0.007;
-let jump = 0.005;
+
 let lastKeyPressed = null;
 let score = 0;
-let currentTime;
-let pastTime;
+
+let isJumping = false;
+let jumpStartTime = 0;
+let jumpHoldTime = 0;
 
 //Objects
 
@@ -132,57 +135,53 @@ function setAppearancePropertiesNoPos (obj,name) {
   Util.setRoundedness(r,name)
   Util.setColour(h,s,l,a,name)
 }
-function isOverlapping(elOne, elTwo) { //
-  const rect1 = elOne.getBoundingClientRect();
-  const rect2 = elTwo.getBoundingClientRect();
+function isOverlapping(nameOne, nameTwo) { //
+  const rect1 = nameOne.getBoundingClientRect();
+  const rect2 = nameTwo.getBoundingClientRect();
 
   const overlap = !(
-    rect1.right < rect2.left ||   // elOne is to the left of elTwo
-    rect1.left > rect2.right ||   // elOne is to the right of elTwo
-    rect1.bottom < rect2.top ||   // elOne is above elTwo
-    rect1.top > rect2.bottom      // elOne is below elTwo
+    rect1.right < rect2.left ||  // checks if man and gameover
+    rect1.left > rect2.right ||  // is in the same place or not
+    rect1.bottom < rect2.top || 
+    rect1.top > rect2.bottom   
   );
 
   return overlap; 
 }
+function animateJump(height, duration) {
+  if (isJumping) return;
+  isJumping = true;
 
-/* const funkApps = [
-  
- 
-];
+  const startY = 0.65; // ground level
+  const startTime = performance.now();
 
-for (const funkApp of funkApps) {
-  console.log(funkApp);
+  function jump(time) {
+    const elapsed = time - startTime;
+    const progress = elapsed / duration;
+
+    if (progress < 1) {
+      // Smooth parabolic motion (up and down)
+      const yOffset = -4 * height * (progress - 0.5) ** 2 + height;
+      manOneObj.y = startY - yOffset;
+
+      requestAnimationFrame(jump);
+    } else {
+      // Land
+      manOneObj.y = startY;
+      manOneShadowObj.a = 0.61;
+      manOneShadowObj.width = 70;
+      isJumping = false;
+    }
+  }
+
+  requestAnimationFrame(jump);
 }
 
-const list = document.getElementById("myList");
-
-for (let i = 1; i <= 5; i++) {
-  const li = document.createElement("li");
-  li.textContent = "Item " + i;
-  list.appendChild(li);
-} */
-
-  let angle = 0;          // keeps track of the animation phase
-  let time = 'timeSpaceIsHeldDown'
-  const amplitude = 'number(max100)*time';  // how far it moves up and down
-  const speedMove = 0.02;     // how fast it moves
-
-  function animateJump() {
-    // Calculate new Y position using a sine wave
-    const jumpY = Math.sin(angle) * amplitude;
-
-    // Apply translation to the element
-    Util.setPosition(manOneObj.x, jumpY,manOne)
-
-    // Increment angle for the next frame
-    angle += speedMove;
-  }
 // Code that runs over and over again
 function loop() {
   
   setAppearancePropertiesNoPos(manOneObj,manOne);
-   Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneObj.y*window.innerHeight,manOne)
+  Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneObj.y*window.innerHeight,manOne)
   setAppearancePropertiesNoPos(manOneShadowObj,manOneShadow);
    Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneShadowObj.y*window.innerHeight,manOneShadow)
    
@@ -195,7 +194,8 @@ function loop() {
    Util.setPositionPixels(barOneObj.x*window.innerWidth-barOneObj.width/2-trapziodLeftObj.width-36, trapziodLeftObj.y, trapziodLeft)
   setAppearancePropertiesNoPos(trapziodRightObj,trapziodRight);
    Util.setPositionPixels(barOneObj.x*window.innerWidth+barOneObj.width/2-trapziodRightObj.width+36, trapziodRightObj.y, trapziodRight)
-   
+  
+  
  
   if (isOverlapping(manOne, gameOver)) {
   console.log("overlapping");
@@ -217,38 +217,53 @@ function setup() {
   Util.createThing("gameOver","thingOne");
   Util.createThing("trapziodLeft","thingFive");
   Util.createThing("trapziodRight","thingFour");
-
+  
   document.addEventListener("keydown", (event) => {
     if(lastKeyPressed === 'KeyD' && event.code === 'KeyL'){
       ObstecalObj.x=ObstecalObj.x-speed; // moves obsticles to the left
       gameOverObj.x=ObstecalObj.x
-      score+=1
+      score+=1 // keeps score
       lastKeyPressed = 'KeyL';
       console.log('score: '+score)
     }
     if(lastKeyPressed === 'KeyL' && event.code === 'KeyD'){
-      ObstecalObj.x=ObstecalObj.x-speed;
+      ObstecalObj.x=ObstecalObj.x-speed; // moves obsticles to the left
       gameOverObj.x=ObstecalObj.x
-      score+=1
+      score+=1 // keeps score
       lastKeyPressed = 'KeyD';
       console.log('score: '+score)
     }
-  lastKeyPressed = event.code 
+    lastKeyPressed = event.code // records last key pressed
+  });
+  
 
-  document.addEventListener("keydown", (event)=> {    
-   if (event.code === 'Space' && !event.repeat){
-      currentTime = Date.now()
-     }
-  })
-  document.addEventListener("keyup", (event)=> {    
-   if (event.code === 'Space' && !event.repeat){
-      pastTime = Date.now() - currentTime
-      console.log('time '+pastTime)
+  document.addEventListener("keydown", (event) => { // Jump animation call timer start
+  if (event.code === "Space" && !event.repeat && !isJumping) {
+    jumpStartTime = performance.now(); // Start measuring how long Space is held
+  }
+});
+
+document.addEventListener("keyup", (event) => { // Jump animation call timer stop
+  if (event.code === "Space" && jumpStartTime > 0) {
+    // holdTime also rests startTime
+    jumpHoldTime = performance.now() - jumpStartTime;
+    jumpStartTime = 0;
+
+    // Clamp, max jump 
+    if (jumpHoldTime>=1000){
+      jumpHoldTime = 1000;
     }
-  })
+    // makes holdTime into jump hight and airtime
+    const airTime = 2000 + (jumpHoldTime / 0.5); 
+    const jumpHeight = 0.15 + (jumpHoldTime / 1000) * 0.15; 
+
+    animateJump(jumpHeight, airTime);
+  }
+});
+  
 
   
-});
+
 
   
   window.requestAnimationFrame(loop);
