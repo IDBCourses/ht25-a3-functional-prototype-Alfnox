@@ -3,12 +3,14 @@
  *
  */
 
+// (o)
+
 import * as Util from "./util.js";
 
 
 let speed = 0.007;
 let jump = 0.005;
-let lastKeyPressed = ' ';
+let lastKeyPressed = null;
 let score = 0;
 
 //Objects
@@ -24,7 +26,7 @@ const manOneObj = {
   l: 80,
   a: 1,
 }
-const trapziodOneObj = {
+const ObstecalObj = {
   x: 0.6,
   y: 0.7,
   width: 90,
@@ -121,14 +123,14 @@ function setAppearanceProperties (obj,name) {
   Util.setRoundedness(r,name)
   Util.setColour(h,s,l,a,name)
 }
-function setAppearancePropertiesPixels (obj,name) {
+function setAppearancePropertiesNoPos (obj,name) {
   const {x,y,width,height,r,h,s,l,a,rot} = obj
   Util.setRotation(rot,name)
   Util.setSize(width, height, name)
   Util.setRoundedness(r,name)
   Util.setColour(h,s,l,a,name)
 }
-function isOverlapping(elOne, elTwo) {
+function isOverlapping(elOne, elTwo) { //
   const rect1 = elOne.getBoundingClientRect();
   const rect2 = elTwo.getBoundingClientRect();
 
@@ -142,26 +144,61 @@ function isOverlapping(elOne, elTwo) {
   return overlap; 
 }
 
+/* const funkApps = [
+  
+ 
+];
 
+for (const funkApp of funkApps) {
+  console.log(funkApp);
+}
+
+const list = document.getElementById("myList");
+
+for (let i = 1; i <= 5; i++) {
+  const li = document.createElement("li");
+  li.textContent = "Item " + i;
+  list.appendChild(li);
+} */
+
+  let angle = 0;          // keeps track of the animation phase
+  let time = 'timeSpaceIsHeldDown'
+  const amplitude = 'number(max100)*time';  // how far it moves up and down
+  const speedMove = 0.02;     // how fast it moves
+
+  function animateJump() {
+    // Calculate new Y position using a sine wave
+    const jumpY = Math.sin(angle) * amplitude;
+
+    // Apply translation to the element
+    Util.setPosition(manOneObj.x, jumpY,manOne)
+
+    // Increment angle for the next frame
+    angle += speedMove;
+  }
 // Code that runs over and over again
 function loop() {
-  setAppearancePropertiesPixels(manOneShadowObj,manOneShadow);
+  
+  setAppearancePropertiesNoPos(manOneObj,manOne);
    Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneObj.y*window.innerHeight,manOne)
-  setAppearancePropertiesPixels(manOneObj,manOne);
+  setAppearancePropertiesNoPos(manOneShadowObj,manOneShadow);
    Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneShadowObj.y*window.innerHeight,manOneShadow)
-  setAppearanceProperties(trapziodOneObj,trapziodOne);
+   
+  setAppearanceProperties(ObstecalObj,Obstecal);
+  setAppearanceProperties(gameOverObj,gameOver);
+  
   setAppearanceProperties(barOneObj,barOne);
   setAppearanceProperties(barTwoObj,barTwo);
-  setAppearanceProperties(gameOverObj,gameOver);
-  setAppearancePropertiesPixels(trapziodLeftObj,trapziodLeft);
-  setAppearancePropertiesPixels(trapziodRightObj,trapziodRight);
-   Util.setPositionPixels(barOneObj.x*window.innerWidth+barOneObj.width/2-trapziodRightObj.width+36, trapziodRightObj.y, trapziodRight)
+  setAppearancePropertiesNoPos(trapziodLeftObj,trapziodLeft);
    Util.setPositionPixels(barOneObj.x*window.innerWidth-barOneObj.width/2-trapziodLeftObj.width-36, trapziodLeftObj.y, trapziodLeft)
+  setAppearancePropertiesNoPos(trapziodRightObj,trapziodRight);
+   Util.setPositionPixels(barOneObj.x*window.innerWidth+barOneObj.width/2-trapziodRightObj.width+36, trapziodRightObj.y, trapziodRight)
+   
  
   if (isOverlapping(manOne, gameOver)) {
-  console.log("Boxes are overlapping!");
+  console.log("overlapping");
 } else {
-  console.log("No overlap detected.");
+  console.log("No overlap");
 }
  
   window.requestAnimationFrame(loop);
@@ -172,7 +209,7 @@ function loop() {
 function setup() {
   Util.createThing("barTwo","thingThree");
   Util.createThing("barOne","thingThree");
-  Util.createThing("trapziodOne","thingTwo");
+  Util.createThing("Obstecal","thingTwo");
   Util.createThing("manOneShadow","thingOne");
   Util.createThing("manOne","thingOne");
   Util.createThing("gameOver","thingOne");
@@ -180,18 +217,18 @@ function setup() {
   Util.createThing("trapziodRight","thingFour");
 
   document.addEventListener("keydown", (event) => {
-    if(lastKeyPressed === 'KeyY' && event.code === 'KeyH'){
-      trapziodOneObj.x=trapziodOneObj.x-speed; // moves obsticles to the left
-      gameOverObj.x=trapziodOneObj.x
+    if(lastKeyPressed === 'KeyD' && event.code === 'KeyL'){
+      ObstecalObj.x=ObstecalObj.x-speed; // moves obsticles to the left
+      gameOverObj.x=ObstecalObj.x
       score+=1
-      lastKeyPressed = 'KeyH';
+      lastKeyPressed = 'KeyL';
       console.log('score: '+score)
     }
-    if(lastKeyPressed === 'KeyH' && event.code === 'KeyY'){
-      trapziodOneObj.x=trapziodOneObj.x-speed;
-      gameOverObj.x=trapziodOneObj.x
+    if(lastKeyPressed === 'KeyL' && event.code === 'KeyD'){
+      ObstecalObj.x=ObstecalObj.x-speed;
+      gameOverObj.x=ObstecalObj.x
       score+=1
-      lastKeyPressed = 'KeyY';
+      lastKeyPressed = 'KeyD';
       console.log('score: '+score)
     }
 
@@ -217,4 +254,4 @@ function setup() {
   window.requestAnimationFrame(loop);
 }
 
-setup();  
+setup();
