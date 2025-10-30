@@ -12,6 +12,8 @@ let speed = 0.007;
 let jump = 0.005;
 let lastKeyPressed = null;
 let score = 0;
+let currentTime;
+let pastTime;
 
 //Objects
 
@@ -231,25 +233,23 @@ function setup() {
       lastKeyPressed = 'KeyD';
       console.log('score: '+score)
     }
+  lastKeyPressed = event.code 
 
   document.addEventListener("keydown", (event)=> {    
    if (event.code === 'Space' && !event.repeat){
-      manOneObj.y=0.50
+      currentTime = Date.now()
      }
   })
   document.addEventListener("keyup", (event)=> {    
-   if (event.code === 'Space'){
-      manOneObj.y=0.65      
+   if (event.code === 'Space' && !event.repeat){
+      pastTime = Date.now() - currentTime
+      console.log('time '+pastTime)
     }
   })
-/*     if (!event.repeat &&!(lastKeyPressed === event.key)&&(event.key === 'r'||event.key === 'f')){
-    thingOneObj.x=thingOneObj.x+speed;  
-  } */
-  lastKeyPressed = event.code
-  console.log('lastkey '+event.code)
-  console.log('lastkey string '+lastKeyPressed)
+
   
 });
+
   
   window.requestAnimationFrame(loop);
 }
