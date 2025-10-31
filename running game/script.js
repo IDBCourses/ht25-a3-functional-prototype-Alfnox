@@ -266,7 +266,7 @@ function countDown(time) {
   }
   setTimeout(removeOne(),1000)
   
-}
+}//timer work in progress
 
 // Code that runs over and over again
 function loop() {
