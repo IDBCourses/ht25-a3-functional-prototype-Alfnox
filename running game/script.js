@@ -7,12 +7,18 @@
 
 import * as Util from "./util.js";
 
-
-
+let obstacles = [];
+let gameOvers = [];
+let keyPressCount = 0;
+let lastKeyPressed = null;
 let speed = 0.007;
 
-let lastKeyPressed = null;
+const keysRequiredPerObstacle = 50;
+
+
 let score = 0;
+
+let airMulti = 0.6;
 
 let isJumping = false;
 let jumpStartTime = 0;
@@ -42,7 +48,7 @@ const ObstecalObj = {
   l: 50,
   a: 0,
   rot: 0,
-}
+}/// Object not in use atm
 const trapziodLeftObj = {
   x: 0,
   y: 420,
@@ -114,12 +120,91 @@ const gameOverObj = {
   l: 50,
   a: 0.61,
   rot: 0,
+}/// Object not in use atm
+
+
+
+
+// "for" loop functions
+function createNewObstacle() {
+  const gameOverId = "GameOver_" + Date.now();
+  const obstacleId = "Obstacle_" + Date.now();
+  
+
+  const creatObstacle = {
+    id: obstacleId,
+    x: barOneObj.x+(barOneObj.width+70)/window.innerWidth/2,  
+    y: 0.7,
+    width: 90,
+    height: 80,
+    r: 0,
+    h: 100,
+    s: 80,
+    l: 50,
+    a: 0,
+    rot: 0,
+    
+  };
+
+  const creatgameOver = { 
+    id: gameOverId,
+    x: barOneObj.x+(barOneObj.width+70)/window.innerWidth/2,
+    y: 0.717,
+    width: 65,
+    height: 20,
+    r: 1,
+    h: 0, 
+    s: 100,
+    l: 50,
+    a: 0.61,
+    rot: 1,
+    
+  };
+  
+  Util.createThing(obstacleId, "thingTwo");
+   Util.createThing(gameOverId, "thingOne");
+   
+  creatObstacle.element = document.getElementById(obstacleId);
+  creatgameOver.element = document.getElementById(gameOverId);
+
+  // to make sure they are behind anythign else
+if (creatObstacle.element) {
+  creatObstacle.element.style.zIndex = "-1";
+}
+if (creatgameOver.element) {
+  creatgameOver.element.style.zIndex = "-1";
+}
+   
+  obstacles.push(creatObstacle);
+  gameOvers.push(creatgameOver);
+
+}
+function removeOffscreenObstacles() {
+  
+  //remove obstacles
+  for (let i = obstacles.length - 1; i >= 0; i--) {
+    const obstacle = obstacles[i];
+    
+    if (obstacle.x < barOneObj.x-(barOneObj.width+70)/window.innerWidth/2) {
+      if (obstacle.element && obstacle.element.parentNode) {
+        obstacle.element.parentNode.removeChild(obstacle.element);
+      }
+      obstacles.splice(i, 1);      
+    }
+  }
+  //remove game over
+  for (let i = gameOvers.length - 1; i >= 0; i--) {
+    const gameOver = gameOvers[i];
+    if (gameOver.x < barOneObj.x-barOneObj.width/window.innerWidth/2) {
+      if (gameOver.element && gameOver.element.parentNode) {
+        gameOver.element.parentNode.removeChild(gameOver.element);
+      }
+      gameOvers.splice(i, 1);      
+    }
+  }
 }
 
-
-// State variables are the parts of your program that change over time.
-
-// Settings variables should contain all of the "fixed" partsr
+// Functions
 function setAppearanceProperties (obj,name) {
   const {x,y,width,height,r,h,s,l,a,rot} = obj
   Util.setRotation(rot,name)
@@ -167,26 +252,33 @@ function animateJump(height, duration) {
       requestAnimationFrame(jump);
     } else {
       // Land
-      manOneObj.y = startY;
-      manOneShadowObj.a = 0.61;
-      manOneShadowObj.width = 70;
+      manOneObj.y = startY;      
       isJumping = false;
     }
   }
 
   requestAnimationFrame(jump);
 }
+function countDown(time) {
+  function removeOne() {
+    time= time -1
+    console.log(time)
+  }
+  setTimeout(removeOne(),1000)
+  
+}
 
 // Code that runs over and over again
 function loop() {
-  
+  countDown(30);
+
   setAppearancePropertiesNoPos(manOneObj,manOne);
   Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneObj.y*window.innerHeight,manOne)
   setAppearancePropertiesNoPos(manOneShadowObj,manOneShadow);
    Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneShadowObj.y*window.innerHeight,manOneShadow)
    
-  setAppearanceProperties(ObstecalObj,Obstecal);
-  setAppearanceProperties(gameOverObj,gameOver);
+  /* setAppearanceProperties(ObstecalObj,Obstecal); */
+  /* setAppearanceProperties(gameOverObj,gameOver); */
   
   setAppearanceProperties(barOneObj,barOne);
   setAppearanceProperties(barTwoObj,barTwo);
@@ -195,13 +287,27 @@ function loop() {
   setAppearancePropertiesNoPos(trapziodRightObj,trapziodRight);
    Util.setPositionPixels(barOneObj.x*window.innerWidth+barOneObj.width/2-trapziodRightObj.width+36, trapziodRightObj.y, trapziodRight)
   
-  
- 
-  if (isOverlapping(manOne, gameOver)) {
-  console.log("overlapping");
-} else {
-  console.log("No overlap");
-}
+   //sets apperance fore evry new obstecal
+    for (let i = 0; i < obstacles.length; i++) {
+    const obstacle = obstacles[i];
+    setAppearanceProperties(obstacle, obstacle.element);
+
+    for (let i = 0; i < gameOvers.length; i++) {
+    const gameOver = gameOvers[i];
+    setAppearanceProperties(gameOver, gameOver.element);
+    
+   
+    if (isOverlapping(manOne, gameOver.element)) {
+      console.log("Overlapping obstacle");
+    }
+   }
+  }
+
+
+  // remove obstacles and gameover behind white boxes
+  removeOffscreenObstacles();
+  removeOffscreenObstacles();
+
  
   window.requestAnimationFrame(loop);
 }
@@ -211,39 +317,66 @@ function loop() {
 function setup() {
   Util.createThing("barTwo","thingThree");
   Util.createThing("barOne","thingThree");
-  Util.createThing("Obstecal","thingTwo");
+  
   Util.createThing("manOneShadow","thingOne");
   Util.createThing("manOne","thingOne");
-  Util.createThing("gameOver","thingOne");
+  
   Util.createThing("trapziodLeft","thingFive");
   Util.createThing("trapziodRight","thingFour");
   
-  document.addEventListener("keydown", (event) => {
-    if(lastKeyPressed === 'KeyD' && event.code === 'KeyL'){
-      ObstecalObj.x=ObstecalObj.x-speed; // moves obsticles to the left
-      gameOverObj.x=ObstecalObj.x
-      score+=1 // keeps score
-      lastKeyPressed = 'KeyL';
-      console.log('score: '+score)
-    }
-    if(lastKeyPressed === 'KeyL' && event.code === 'KeyD'){
-      ObstecalObj.x=ObstecalObj.x-speed; // moves obsticles to the left
-      gameOverObj.x=ObstecalObj.x
-      score+=1 // keeps score
-      lastKeyPressed = 'KeyD';
-      console.log('score: '+score)
-    }
-    lastKeyPressed = event.code // records last key pressed
-  });
   
 
+  createNewObstacle();
+//MOVING
+  document.addEventListener("keydown", (event) => {
+  if(lastKeyPressed === 'KeyD' && event.code === 'KeyL'){
+    // move ALL obstacles
+    for (let i = 0; i < obstacles.length; i++) {
+      obstacles[i].x = obstacles[i].x - speed;
+    } 
+    for (let i = 0; i < gameOvers.length; i++) { 
+      gameOvers[i].x = gameOvers[i].x - speed;
+    }   
+    score += 1;
+    keyPressCount += 1;
+    lastKeyPressed = 'KeyL';
+    console.log('score: '+score);    
+    // create new obstecals and game over with enoght "keyPressCount"
+    // also sets i back to zero
+    if (keyPressCount >= keysRequiredPerObstacle) {
+      createNewObstacle();
+      keyPressCount = 0;
+    }
+  }
+  
+  if(lastKeyPressed === 'KeyL' && event.code === 'KeyD'){
+    // Move ALL obstacles
+    for (let i = 0; i < obstacles.length; i++) {
+      obstacles[i].x = obstacles[i].x - speed;
+    }   
+    for (let i = 0; i < gameOvers.length; i++) { 
+      gameOvers[i].x = gameOvers[i].x - speed;
+    }
+
+    score += 1;
+    keyPressCount += 1;
+    lastKeyPressed = 'KeyD';
+    console.log('score: '+score);
+    // same as above but for the other key
+    if (keyPressCount >= keysRequiredPerObstacle) {
+      createNewObstacle();
+      keyPressCount = 0;
+    }
+  }
+  lastKeyPressed = event.code;
+});
+  
+/// JUMPING
   document.addEventListener("keydown", (event) => { // Jump animation call timer start
   if (event.code === "Space" && !event.repeat && !isJumping) {
-    jumpStartTime = performance.now(); // Start measuring how long Space is held
-  }
-});
-
-document.addEventListener("keyup", (event) => { // Jump animation call timer stop
+    jumpStartTime = performance.now(); // Start timer
+  }})
+  document.addEventListener("keyup", (event) => { // Jump animation call timer stop
   if (event.code === "Space" && jumpStartTime > 0) {
     // holdTime also rests startTime
     jumpHoldTime = performance.now() - jumpStartTime;
@@ -254,19 +387,22 @@ document.addEventListener("keyup", (event) => { // Jump animation call timer sto
       jumpHoldTime = 1000;
     }
     // makes holdTime into jump hight and airtime
-    const airTime = 2000 + (jumpHoldTime / 0.5); 
+    const airTime = 2000 + (jumpHoldTime / airMulti); 
     const jumpHeight = 0.15 + (jumpHoldTime / 1000) * 0.15; 
 
     animateJump(jumpHeight, airTime);
   }
 });
   
-
-  
-
-
-  
   window.requestAnimationFrame(loop);
 }
 
 setup();
+
+
+
+// TODO
+// Fail window and stop game
+// scorse counter on screen
+// timer that fails you after a sertain time (30sec)
+// make obstecals appear at a radom amout of key klicks smth like math.random(50-70)
