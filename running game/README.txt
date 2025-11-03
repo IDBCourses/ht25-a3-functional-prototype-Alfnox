@@ -10,3 +10,8 @@ you can charge it for 1 second at most but if you are moving
 fast enoght with "D" and "L" you might be able to just click it.
 
 buttons: D,L and Space.
+
+Recomende to play it in normal browser window, 
+changing the hight of the window does meke things look wierd.
+if it to easy i recomend putting the console on the rightside
+and then the bigger you make it the harder the games becomes.
