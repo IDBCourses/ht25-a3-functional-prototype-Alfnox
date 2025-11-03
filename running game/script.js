@@ -203,6 +203,16 @@ function setAppearancePropertiesNoPos (obj,name) {
   Util.setRoundedness(r,name)
   Util.setColour(h,s,l,a,name)
 }
+function allAppearance () {
+  setAppearanceProperties(barOneObj,barOne);
+  setAppearanceProperties(barTwoObj,barTwo);  
+  setAppearancePropertiesNoPos(manOneShadowObj,manOneShadow);
+  Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneShadowObj.y*window.innerHeight,manOneShadow)
+  setAppearancePropertiesNoPos(trapziodLeftObj,trapziodLeft);
+  Util.setPositionPixels(barOneObj.x*window.innerWidth-barOneObj.width/2-trapziodLeftObj.width-36, trapziodLeftObj.y, trapziodLeft)
+  setAppearancePropertiesNoPos(trapziodRightObj,trapziodRight);
+  Util.setPositionPixels(barOneObj.x*window.innerWidth+barOneObj.width/2-trapziodRightObj.width+36, trapziodRightObj.y, trapziodRight)
+}
 function isOverlapping(nameOne, nameTwo) { //
   const rect1 = nameOne.getBoundingClientRect();
   const rect2 = nameTwo.getBoundingClientRect();
@@ -309,14 +319,7 @@ function setup() {
   Util.createThing("trapziodLeft","thingFive");
   Util.createThing("trapziodRight","thingFour");
 
-  setAppearanceProperties(barOneObj,barOne);
-  setAppearanceProperties(barTwoObj,barTwo);  
-  setAppearancePropertiesNoPos(manOneShadowObj,manOneShadow);
-  Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneShadowObj.y*window.innerHeight,manOneShadow)
-  setAppearancePropertiesNoPos(trapziodLeftObj,trapziodLeft);
-  Util.setPositionPixels(barOneObj.x*window.innerWidth-barOneObj.width/2-trapziodLeftObj.width-36, trapziodLeftObj.y, trapziodLeft)
-  setAppearancePropertiesNoPos(trapziodRightObj,trapziodRight);
-  Util.setPositionPixels(barOneObj.x*window.innerWidth+barOneObj.width/2-trapziodRightObj.width+36, trapziodRightObj.y, trapziodRight)
+  allAppearance();
   
   createNewObstacle();
 //MOVING

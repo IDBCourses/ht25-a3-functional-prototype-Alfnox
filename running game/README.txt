@@ -15,3 +15,5 @@ Recomende to play it in normal browser window,
 changing the hight of the window does meke things look wierd.
 if it to easy i recomend putting the console on the rightside
 and then the bigger you make it the harder the games becomes.
+
+the timer in the top left will tell you when you lose.
