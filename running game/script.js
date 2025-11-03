@@ -7,6 +7,8 @@
 
 import * as Util from "./util.js";
 
+let gameActive = true;
+
 let obstacles = [];
 let gameOvers = [];
 let keyPressCount = 0;
@@ -15,8 +17,12 @@ let speed = 0.007;
 
 const keysRequiredPerObstacle = 50;
 
-
 let score = 0;
+let timer = 30;   // timer add minus value
+let timerInterval = null;  // time between updates
+const timerDisplay = document.getElementById("timer-display");
+const scoreDisplay = document.getElementById("score-display");
+
 
 let airMulti = 0.6;
 
@@ -149,14 +155,14 @@ function createNewObstacle() {
   const creatgameOver = { 
     id: gameOverId,
     x: barOneObj.x+(barOneObj.width+70)/window.innerWidth/2,
-    y: 0.717,
+    y: 0.7188,
     width: 65,
-    height: 20,
+    height: 5,
     r: 1,
     h: 0, 
     s: 100,
     l: 50,
-    a: 0.61,
+    a: 0,
     rot: 1,
     
   };
@@ -259,26 +265,47 @@ function animateJump(height, duration) {
 
   requestAnimationFrame(jump);
 }
-function countDown(time) {
-  function removeOne() {
-    time= time -1
-    console.log(time)
-  }
-  setTimeout(removeOne(),1000)
+
+
+function startTimer() {
+  timerDisplay.textContent = `Time: ${timer}`; // had issues with it not updating propperly
   
-}//timer work in progress
+  timerInterval = setInterval(() => {
+    if (!gameActive) return; // Don't update timer if game is over
+    
+    timer--;
+    timerDisplay.textContent = `Time: ${timer}`;
+
+    if (timer <= 0) {
+      timer = 0;
+      timerDisplay.textContent = "Time's Up!";
+      shutUpYouLoseYouLoser();
+    }
+  }, 1000);
+}
+function shutUpYouLoseYouLoser () {
+   gameActive = false; 
+  clearInterval(timerInterval);
+  if (timer <= 0) {
+    timerDisplay.textContent = "time's Up!";
+  } else {
+    timerDisplay.textContent = "you suck!";
+  }
+  freezePage();
+}
+
+
+
 
 // Code that runs over and over again
 function loop() {
-  countDown(30);
+  
 
   setAppearancePropertiesNoPos(manOneObj,manOne);
   Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneObj.y*window.innerHeight,manOne)
   setAppearancePropertiesNoPos(manOneShadowObj,manOneShadow);
    Util.setPositionPixels(barOneObj.x*window.innerWidth-manOneObj.width,manOneShadowObj.y*window.innerHeight,manOneShadow)
-   
-  /* setAppearanceProperties(ObstecalObj,Obstecal); */
-  /* setAppearanceProperties(gameOverObj,gameOver); */
+
   
   setAppearanceProperties(barOneObj,barOne);
   setAppearanceProperties(barTwoObj,barTwo);
@@ -299,6 +326,7 @@ function loop() {
    
     if (isOverlapping(manOne, gameOver.element)) {
       console.log("Overlapping obstacle");
+      shutUpYouLoseYouLoser();
     }
    }
   }
@@ -307,8 +335,7 @@ function loop() {
   // remove obstacles and gameover behind white boxes
   removeOffscreenObstacles();
   removeOffscreenObstacles();
-
- 
+  
   window.requestAnimationFrame(loop);
 }
 
@@ -324,11 +351,12 @@ function setup() {
   Util.createThing("trapziodLeft","thingFive");
   Util.createThing("trapziodRight","thingFour");
   
-  
+  startTimer();
 
   createNewObstacle();
 //MOVING
   document.addEventListener("keydown", (event) => {
+  if(!gameActive) return;
   if(lastKeyPressed === 'KeyD' && event.code === 'KeyL'){
     // move ALL obstacles
     for (let i = 0; i < obstacles.length; i++) {
@@ -340,7 +368,9 @@ function setup() {
     score += 1;
     keyPressCount += 1;
     lastKeyPressed = 'KeyL';
-    console.log('score: '+score);    
+    console.log('score: '+score);
+    scoreDisplay.textContent = `Score: ${score}`;  // updates score visually
+    
     // create new obstecals and game over with enoght "keyPressCount"
     // also sets i back to zero
     if (keyPressCount >= keysRequiredPerObstacle) {
@@ -362,6 +392,7 @@ function setup() {
     keyPressCount += 1;
     lastKeyPressed = 'KeyD';
     console.log('score: '+score);
+    scoreDisplay.textContent = `Score: ${score}`;  // updates score visually
     // same as above but for the other key
     if (keyPressCount >= keysRequiredPerObstacle) {
       createNewObstacle();
@@ -373,7 +404,8 @@ function setup() {
   
 /// JUMPING
   document.addEventListener("keydown", (event) => { // Jump animation call timer start
-  if (event.code === "Space" && !event.repeat && !isJumping) {
+    if(!gameActive) return;
+    if (event.code === "Space" && !event.repeat && !isJumping) {
     jumpStartTime = performance.now(); // Start timer
   }})
   document.addEventListener("keyup", (event) => { // Jump animation call timer stop
