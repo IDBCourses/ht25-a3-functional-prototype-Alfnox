@@ -276,7 +276,6 @@ function shutUpYouLoseYouLoser () {
   } else {
     timerDisplay.textContent = "you suck!";
   }
-  freezePage();
 }
 
 
